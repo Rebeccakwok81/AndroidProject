@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">Cocktail_Database</string>
     <string name="strBtnSearch">Search</string>
-    <string name="strSearchView">Please enter search here...</string>
+    <string name="strEtSearch">Please enter search here...</string>
 </resources>

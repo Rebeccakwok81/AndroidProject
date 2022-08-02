@@ -13,10 +13,11 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-                <SearchView
+                <EditText
+                    android:id="@+id/etSearch"
                     android:layout_width="280dp"
                     android:layout_height="match_parent"
-                    android:hint="@string/strSearchView"/>
+                    android:hint="@string/strEtSearch"/>
 
                 <Button
                     android:id="@+id/btnSearch"

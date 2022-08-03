@@ -53,12 +53,17 @@ public class MainActivity extends AppCompatActivity {
          clickBtnSearch.setOnClickListener ( click-> {
 
              EditText search = findViewById(R.id.etSearch);
+             String editSearch=search.getText().toString() ;
 
-             pic.add(search.getText().toString());
+            if(editSearch != null)
+                 editSearch = editSearch.replaceAll("\\s","+");
+
+             pic.add(editSearch);
              list.setAdapter(arrayAdapter);
              arrayAdapter.notifyDataSetChanged();
-        });
+         });
     }
+
 
     /*
     private class MyListAdapter extends BaseAdapter {

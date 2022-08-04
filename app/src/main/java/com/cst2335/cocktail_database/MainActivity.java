@@ -1,7 +1,12 @@
 package com.cst2335.cocktail_database;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,35 +42,60 @@ the previous search term is shown.
 
 public class MainActivity extends AppCompatActivity {
 
-    ArrayList<String> pic = new ArrayList<>();
-    ArrayAdapter <String> arrayAdapter;
+    ArrayList<String> drinkList;
+    RecyclerView recyclerView;
+    //ArrayAdapter<String> arrayAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ListView list =  (ListView) findViewById(R.id.listDrink);
-        arrayAdapter = new ArrayAdapter<String>(getApplicationContext(),
-                        android.R.layout.simple_list_item_1, pic);
+        recyclerView = findViewById(R.id.rvDrink);
+        drinkList = new ArrayList<>();
+        //ListView
+       // arrayAdapter = new ArrayAdapter<String>(getApplicationContext(),
+         //       android.R.layout.simple_list_item_1,drinkList);
 
         Button clickBtnSearch = findViewById(R.id.btnSearch);
-         clickBtnSearch.setOnClickListener ( click-> {
+        clickBtnSearch.setOnClickListener(click -> {
 
-             EditText search = findViewById(R.id.etSearch);
-             String editSearch=search.getText().toString() ;
 
-            if(editSearch != null)
-                 editSearch = editSearch.replaceAll("\\s","+");
 
-             pic.add(editSearch);
-             list.setAdapter(arrayAdapter);
-             arrayAdapter.notifyDataSetChanged();
-         });
+            EditText search = findViewById(R.id.etSearch);
+            String editSearch = search.getText().toString();
+
+           if (editSearch != null)
+                editSearch = editSearch.replaceAll("\\s", "+");
+
+           //setAdapter
+            drinkList.add(editSearch);
+            RVAdapter adapter= new RVAdapter(drinkList);
+            //list.setAdapter(arrayAdapter);
+            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+            recyclerView.setLayoutManager(layoutManager);
+            recyclerView.setItemAnimator(new DefaultItemAnimator());
+            recyclerView.setAdapter(adapter);
+
+            System.out.println(drinkList);
+            adapter.notifyDataSetChanged();
+            search.setText("");
+        });
     }
 
+/*
+    public class  CocktailQuery extends AsyncTask<String, Integer, String> {
 
-    /*
+        @Override
+        protected String doInBackground(String... strings) {
+            return null;
+        }
+    }
+
+ */
+
+    /*Database
     private class MyListAdapter extends BaseAdapter {
 
         @Override

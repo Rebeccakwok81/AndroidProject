@@ -19,7 +19,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class DrinkInfo extends AppCompatActivity {
+public class DrinkOnClickActivity extends AppCompatActivity {
 
     TextView ins;
     TextView in1;
@@ -93,11 +93,12 @@ public class DrinkInfo extends AppCompatActivity {
                 for(int i =0; i < drinksArray.length(); i++) {
                     JSONObject obj = drinksArray.getJSONObject(i);
                     pic = obj.getString("strDrinkThumb");
-                    publishProgress(100);
+                    publishProgress(50);
                     inst = obj.getString("strInstructions");
                     ing1 = obj.getString("strIngredient1");
                     ing2 = obj.getString("strIngredient2");
                     ing3 = obj.getString("strIngredient3");
+                    publishProgress(100);
 
                     // bmp = BitmapFactory.decodeStream(response);
 

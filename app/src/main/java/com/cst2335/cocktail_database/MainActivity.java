@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
             dataToPass.putInt(ITEM_POSITION, position);
             dataToPass.putLong(ITEM_ID, id);
 
-                Intent nextActivity = new Intent(MainActivity.this, DrinkInfo.class);
+                Intent nextActivity = new Intent(MainActivity.this, DrinkOnClickActivity.class);
                 nextActivity.putExtras(dataToPass); //send data to next activity
                 startActivity(nextActivity); //make the transition
 

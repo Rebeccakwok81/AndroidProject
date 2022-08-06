@@ -53,6 +53,10 @@ public class MainActivity extends AppCompatActivity {
     RVAdapter adapter;
     //End of RecyclerView Objects
 
+    //hold search input
+    EditText search;
+
+    //hold search input with plus sign
     String editSearch;
 
     @Override
@@ -67,12 +71,12 @@ public class MainActivity extends AppCompatActivity {
         //btnSearch(search button) is in activity_main
         Button clickBtnSearch = findViewById(R.id.btnSearch);
 
-        //When search is click text in the EditText is pass to the list with add sign in space
+        //When search is click text in the EditText is pass to the list with plus sign in space
         clickBtnSearch.setOnClickListener(click -> {
             adapter = new RVAdapter(this, drinkList);
 
             //etSearch(EditText for search) is in activity_main
-            EditText search = findViewById(R.id.etSearch);
+            search = findViewById(R.id.etSearch);
             editSearch = search.getText().toString();
 
             //check search is not empty
@@ -80,67 +84,27 @@ public class MainActivity extends AppCompatActivity {
                 //Replace space in search with add sign require by API fromate
                 editSearch = editSearch.replaceAll("\\s", "+");
 
-                //Using RecycleView currently position is unable to be update.
-                // There will be work around
-                setText();
-
-                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-                recyclerView.setLayoutManager(layoutManager);
-                recyclerView.setItemAnimator(new DefaultItemAnimator());
-                recyclerView.setAdapter(adapter);
-                adapter.notifyDataSetChanged();
-                search.setText("");
+                setObject();
+                useAdapter();
             }
         });
     }
 
-    public void setText() {
+    /**
+     * method is to add info into object
+     */
+    public void setObject() {
         drinkList.add(editSearch);
+    }
+
+
+    public void useAdapter(){
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
+        search.setText("");
     }
 }
 
-/*
-    public class  CocktailQuery extends AsyncTask<String, Integer, String> {
-
-        @Override
-        protected String doInBackground(String... strings) {
-            return null;
-        }
-    }
-
- */
-
-    /*Database
-    private class MyListAdapter extends BaseAdapter {
-
-        @Override
-        public int getCount() {
-            return pic.size();
-        }
-
-        @Override
-        public Object getItem(int i) {
-            return pic.get(i);
-        }
-
-        @Override
-        public long getItemId(int i) {
-            return i;
-        }
-
-        @Override
-        public View getView(int i, View view, ViewGroup viewGroup) {
-
-            LayoutInflater inflater = getLayoutInflater();
-            View newView;
-            TextView tView;
-
-            newView = inflater.inflate(R.layout.listDrink, viewGroup, false);
-            tView = newView.findViewById(R.id.etSearch);
-            tView.setText(getItem(i).toString());
-
-            return newView;
-        }
-    }
-
-     */

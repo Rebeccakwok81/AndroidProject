@@ -3,6 +3,7 @@ package com.cst2335.cocktail_database;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -42,47 +43,61 @@ the previous search term is shown.
 
 public class MainActivity extends AppCompatActivity {
 
+    //RecyclerView Objects
     ArrayList<String> drinkList;
-    RecyclerView recyclerView;
-    //ArrayAdapter<String> arrayAdapter;
 
+    //Android Class
+    RecyclerView recyclerView;
+
+    //Created Adapter Class
+    RVAdapter adapter;
+    //End of RecyclerView Objects
+
+    String editSearch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //rvDrink is in activity_main.xml
         recyclerView = findViewById(R.id.rvDrink);
         drinkList = new ArrayList<>();
-        //ListView
-       // arrayAdapter = new ArrayAdapter<String>(getApplicationContext(),
-         //       android.R.layout.simple_list_item_1,drinkList);
 
+        //btnSearch(search button) is in activity_main
         Button clickBtnSearch = findViewById(R.id.btnSearch);
+
+        //When search is click text in the EditText is pass to the list with add sign in space
         clickBtnSearch.setOnClickListener(click -> {
+            adapter = new RVAdapter(this, drinkList);
 
-
-
+            //etSearch(EditText for search) is in activity_main
             EditText search = findViewById(R.id.etSearch);
-            String editSearch = search.getText().toString();
+            editSearch = search.getText().toString();
 
-           if (editSearch != null)
+            //check search is not empty
+            if (editSearch != null) {
+                //Replace space in search with add sign require by API fromate
                 editSearch = editSearch.replaceAll("\\s", "+");
 
-           //setAdapter
-            drinkList.add(editSearch);
-            RVAdapter adapter= new RVAdapter(drinkList);
-            //list.setAdapter(arrayAdapter);
-            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
-            recyclerView.setLayoutManager(layoutManager);
-            recyclerView.setItemAnimator(new DefaultItemAnimator());
-            recyclerView.setAdapter(adapter);
+                //Using RecycleView currently position is unable to be update.
+                // There will be work around
+                setText();
 
-            System.out.println(drinkList);
-            adapter.notifyDataSetChanged();
-            search.setText("");
+                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+                recyclerView.setLayoutManager(layoutManager);
+                recyclerView.setItemAnimator(new DefaultItemAnimator());
+                recyclerView.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
+                search.setText("");
+            }
         });
     }
+
+    public void setText() {
+        drinkList.add(editSearch);
+    }
+}
 
 /*
     public class  CocktailQuery extends AsyncTask<String, Integer, String> {
@@ -129,4 +144,3 @@ public class MainActivity extends AppCompatActivity {
     }
 
      */
-}

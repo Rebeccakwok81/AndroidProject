@@ -1,25 +1,33 @@
 package com.cst2335.cocktail_database;
 
-import static com.cst2335.cocktail_database.R.layout.list_items;
+
+
 
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
+
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.security.PublicKey;
 import java.util.ArrayList;
 
+
+
 public class RVAdapter extends RecyclerView.Adapter<RVAdapter.MyViewHolder> {
-    private ArrayList<String> drinksList = new ArrayList<>();
+    private ArrayList<String> drinksList;
+    private LayoutInflater layout;
 
 
 
-    public RVAdapter(ArrayList<String> drinks){
-        drinksList = drinks;
+    public RVAdapter(Context context, ArrayList<String> drinksList){
+        this.drinksList = drinksList;
+        layout = LayoutInflater.from(context);
 
     }
 
@@ -35,16 +43,25 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.MyViewHolder> {
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemSearch = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_items, parent, false);
+        View itemSearch = layout.inflate(R.layout.list_items, parent, false);
         return new MyViewHolder(itemSearch);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        String drinkName = drinksList.get(position);
-        holder.search.setText(drinkName);
-    }
 
+        holder.search.setText(drinksList.get(position));
+/*
+        holder.search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(holder.itemView.getContext(),"Press" + drinksList.get(holder.getLayoutPosition()) + "items", Toast.LENGTH_SHORT).show();
+
+            }
+
+
+        }); */
+        }
 
     @Override
     public int getItemCount() {

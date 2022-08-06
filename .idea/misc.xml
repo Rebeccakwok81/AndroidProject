@@ -4,6 +4,10 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/jimmy/AndroidStudioProjects/Cocktail_Database/app/src/main/res/layout/activity_main.xml" value="0.22" />
+        <entry key="..\:/Users/szeman/AndroidStudioProjects/AndroidProject/app/src/main/res/layout/activity_listdrink.xml" value="0.25416666666666665" />
+        <entry key="..\:/Users/szeman/AndroidStudioProjects/AndroidProject/app/src/main/res/layout/activity_main.xml" value="0.25416666666666665" />
+        <entry key="..\:/Users/szeman/AndroidStudioProjects/AndroidProject/app/src/main/res/layout/fragment_detail.xml" value="0.1453804347826087" />
+        <entry key="..\:/Users/szeman/AndroidStudioProjects/AndroidProject/app/src/main/res/layout/frame_drinkdetails.xml" value="0.253125" />
       </map>
     </option>
   </component>

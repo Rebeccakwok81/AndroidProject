@@ -10,7 +10,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -19,7 +18,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /*
     Your application should have an EditText for entering the name of a drink. There should also be a “search”
@@ -80,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
             dataToPass.putInt(ITEM_POSITION, position);
             dataToPass.putLong(ITEM_ID, id);
 
-                Intent nextActivity = new Intent(MainActivity.this, EmptyActivity.class);
+                Intent nextActivity = new Intent(MainActivity.this, DrinkInfo.class);
                 nextActivity.putExtras(dataToPass); //send data to next activity
                 startActivity(nextActivity); //make the transition
 

@@ -7,6 +7,8 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -44,7 +46,7 @@ the previous search term is shown.
 public class MainActivity extends AppCompatActivity {
 
     //RecyclerView Objects
-    ArrayList<String> drinkList;
+    ArrayList<Contact> contactsList = new ArrayList<>();
 
     //Android Class
     RecyclerView recyclerView;
@@ -56,6 +58,8 @@ public class MainActivity extends AppCompatActivity {
     //hold search input with plus sign
     String editSearch;
 
+    SQLiteDatabase db;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
 
         //rvDrink is in activity_main.xml
         recyclerView = findViewById(R.id.rvDrink);
-        drinkList = new ArrayList<>();
+
 
         //btnSearch(search button) is in activity_main
         Button clickBtnSearch = findViewById(R.id.btnSearch);
@@ -91,18 +95,48 @@ public class MainActivity extends AppCompatActivity {
      * method is to add info into object
      */
     public void setObject() {
-        drinkList.add(editSearch);
+
+        contactsList.add(new Contact(editSearch, id));
     }
 
 
     public void useAdapter(){
-        RVAdapter adapter = new RVAdapter(this, drinkList);
+        RVAdapter adapter = new RVAdapter(this, contactsList);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
         search.setText("");
+    }
+
+    private void loadDataFromDatabase()
+    {
+        //get a database connection:
+        MyOpener dbOpener = new MyOpener(this);
+        db = dbOpener.getWritableDatabase(); //This calls onCreate() if you've never built the table before, or onUpgrade if the version here is newer
+
+
+        // We want to get all of the columns. Look at MyOpener.java for the definitions:
+        java.lang.String[] columns = {MyOpener.COL_ID,  MyOpener.COL_NAME};
+        //query all the results from the database:
+        Cursor results = db.query(false, MyOpener.TABLE_NAME, columns, null, null, null, null, null, null);
+
+        //Now the results object has rows of results that match the query.
+        //find the column indices:
+
+        int nameColIndex = results.getColumnIndex(MyOpener.COL_NAME);
+        int idColIndex = results.getColumnIndex(MyOpener.COL_ID);
+
+        //iterate over the results, return true if there is a next item:
+        while(results.moveToNext())
+        {
+            String name = results.getString(nameColIndex);
+            long id = results.getLong(idColIndex);
+
+            //add the new Contact to the array list:
+            contactsList.add(new Contact(name, id));
+        }
     }
 }
 

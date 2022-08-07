@@ -48,9 +48,6 @@ public class MainActivity extends AppCompatActivity {
 
     //Android Class
     RecyclerView recyclerView;
-
-    //Created Adapter Class
-    RVAdapter adapter;
     //End of RecyclerView Objects
 
     //hold search input
@@ -73,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
 
         //When search is click text in the EditText is pass to the list with plus sign in space
         clickBtnSearch.setOnClickListener(click -> {
-            adapter = new RVAdapter(this, drinkList);
+
 
             //etSearch(EditText for search) is in activity_main
             search = findViewById(R.id.etSearch);
@@ -99,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void useAdapter(){
+        RVAdapter adapter = new RVAdapter(this, drinkList);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());

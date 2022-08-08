@@ -20,7 +20,9 @@ import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.json.JSONArray;
@@ -38,6 +40,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 /*
     Your application should have an EditText for entering the name of a drink. There should also be a “search”
@@ -74,7 +77,15 @@ public class MainActivity extends AppCompatActivity {
     String editSearch;
 
     SQLiteDatabase db;
-    String currentDrinkName = null;
+    ArrayList <DrinkInfo> arrayDrinkInfo = new ArrayList<>();
+
+    TextView ins;
+    TextView in1;
+    TextView in2;
+    TextView in3;
+    ImageView photo;
+    ProgressBar progressBar;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,13 +125,15 @@ public class MainActivity extends AppCompatActivity {
     /**
      * method is to add info into object
      */
-    public void setSearchData() {
+    public void setSearchData(String drinkName) {
+
+        arrayDrinkInfo.add(new DrinkInfo(drinkName));
 
     }
 
 
     public void useAdapter() {
-        RVAdapter adapter = new RVAdapter(this, contactsList);
+        RVAdapter adapter = new RVAdapter(this, arrayDrinkInfo);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -136,6 +149,7 @@ public class MainActivity extends AppCompatActivity {
         String ing2;
         String ing3;
         Bitmap bmp;
+        String drinkName;
 
         @Override
         protected String doInBackground(String... args) {
@@ -164,15 +178,25 @@ public class MainActivity extends AppCompatActivity {
                 // convert string to JSON: Look at slide 27:
                 JSONObject drinksReport = new JSONObject(result);
                 JSONArray drinksArray = drinksReport.getJSONArray("drinks");
+
+              //do{
+                   // JSONObject obj = drinksArray.getJSONObject(id);
+
+              // }while (drinksReport.getBoolean("drinks"));
+
+
+
                 for(int i =0; i < drinksArray.length(); i++) {
                     JSONObject obj = drinksArray.getJSONObject(i);
+                    drinkName = obj.getString("strDrink");
+                    setSearchData(drinkName);
                     pic = obj.getString("strDrinkThumb");
-                    publishProgress(50);
+                    publishProgress(100);
                     inst = obj.getString("strInstructions");
                     ing1 = obj.getString("strIngredient1");
                     ing2 = obj.getString("strIngredient2");
                     ing3 = obj.getString("strIngredient3");
-                    publishProgress(100);
+                    publishProgress(150);
 
                     // bmp = BitmapFactory.decodeStream(response);
 
@@ -187,7 +211,21 @@ public class MainActivity extends AppCompatActivity {
             return "Done";
         }
 
+        public void onPostExecute(String fromDoInBackground)
+        {
+            arrayDrinkInfo.add(new DrinkInfo("drinkName"));
+            ins.setText(inst);
+            in1.setText(ing1);
+            in2.setText(ing2);
+            in3.setText(ing3);
+            //    photo.setImageURI(Uri.parse(pic));
+            //photo.setImageURI(Uri.parse(pic));
+
+
         }
+        }
+
+
     }
 
 

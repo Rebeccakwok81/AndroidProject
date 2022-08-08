@@ -17,22 +17,22 @@ import java.util.ArrayList;
 
 
 public class RVAdapter extends RecyclerView.Adapter<RVAdapter.MyViewHolder> {
-    private ArrayList<Contact> contactsList;
+    private ArrayList<DrinkInfo> drinkInfos;
     private LayoutInflater layout;
 
 
-    public RVAdapter(Context context, ArrayList<Contact> contactsList){
-        this.contactsList = contactsList;
+    public RVAdapter(Context context, ArrayList<DrinkInfo> drinkInfos){
+        this.drinkInfos = drinkInfos;
         layout = LayoutInflater.from(context);
 
     }
 
     public class  MyViewHolder extends RecyclerView.ViewHolder{
-        private TextView drinkName;
+        private TextView viewDrinkName;
 
         public MyViewHolder(@NonNull View v) {
             super(v);
-            drinkName = v.findViewById(R.id.list_item_drink);
+            viewDrinkName = v.findViewById(R.id.list_item_drink);
         }
     }
 
@@ -46,7 +46,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.MyViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
 
-        holder.drinkName.setText(contactsList.get(position).getName());
+        holder.viewDrinkName.setText(drinkInfos.get(position).getDrinkName());
 /*
         holder.search.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,6 +61,6 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.MyViewHolder> {
 
     @Override
     public int getItemCount() {
-        return contactsList.size();
+        return drinkInfos.size();
     }
 }

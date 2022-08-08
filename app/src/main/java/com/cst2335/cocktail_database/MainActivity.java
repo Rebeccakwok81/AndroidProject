@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
     SQLiteDatabase db;
 
     //list of drink from HTTP
-    ArrayList <DrinkInfo> arrayDrinkInfo = new ArrayList<>();
+    ArrayList <DrinkInfo>  arrayDrinkInfo = new ArrayList<>();
 
     //Globel variable for AsyncTask
     TextView ins;
@@ -98,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
         clickBtnSearch.setOnClickListener(click -> {
 
 
+
             //etSearch(EditText for search) is in activity_main
             search = findViewById(R.id.etSearch);
             editSearch = search.getText().toString();
@@ -119,12 +120,10 @@ public class MainActivity extends AppCompatActivity {
     public void setData () {
         for (int i = 0; i < drinkName.size(); i++) {
             arrayDrinkInfo.add(new DrinkInfo(drinkName.get(i)));
-            System.out.println(drinkName.get(i));
-            String temp = drinkName.get(i);
             System.out.println(arrayDrinkInfo.get(i).getDrinkName());
             useAdapter();
         }
-        }
+    }
 
 /*
     private void loadDataFromDatabase()
@@ -199,6 +198,7 @@ public class MainActivity extends AppCompatActivity {
             recyclerView.setAdapter(adapter);
             adapter.notifyDataSetChanged();
             search.setText("");
+
         }
 
         private class MyHTTPRequest extends AsyncTask<String, Integer, String> {

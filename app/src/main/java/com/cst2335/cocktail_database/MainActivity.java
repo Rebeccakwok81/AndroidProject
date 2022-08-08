@@ -2,21 +2,31 @@ package com.cst2335.cocktail_database;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-
-import android.content.ContentValues;
-import android.content.Intent;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
+
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+
+import java.net.URL;
 import java.util.ArrayList;
 
 /*
@@ -40,104 +50,77 @@ the previous search term is shown.
 
 public class MainActivity extends AppCompatActivity {
 
-    //FG
-    public static final String ITEM_SELECTED = "ITEM";
-    public static final String ITEM_POSITION = "POSITION";
-    public static final String ITEM_ID = "ID";
 
+    //Android Class
+    RecyclerView recyclerView;
 
+    //hold search input
+    EditText search;
 
-    //    ArrayList<String> pic = new ArrayList<>();
-    ArrayList<Contact> contactsList = new ArrayList<>();
-//    ArrayAdapter <String> arrayAdapter;
-    MyOwnAdapter myAdapter;
+    //hold search input with plus sign
+    String editSearch;
 
     SQLiteDatabase db;
-    private static int ACTIVITY_VIEW_CONTACT = 33;
 
+    //list of drink from HTTP
+    ArrayList <DrinkInfo> arrayDrinkInfo = new ArrayList<>();
+
+    //Globel variable for AsyncTask
+    TextView ins;
+    TextView in1;
+    TextView in2;
+    TextView in3;
+    ImageView photo;
+    ProgressBar progressBar;
+    String drinkName;
+
+    RVAdapter adapter;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//
-        EditText nameEdit = (EditText)findViewById(R.id.etSearch);
+
+
+
+        //rvDrink is in activity_main.xml
+        recyclerView = findViewById(R.id.rvDrink);
+
+
+        //btnSearch(search button) is in activity_main
         Button clickBtnSearch = findViewById(R.id.btnSearch);
-        ListView list =  (ListView) findViewById(R.id.listDrink);
-
-
-        myAdapter = new MyOwnAdapter();
-        list.setAdapter(myAdapter);
-
-
-        list.setOnItemClickListener((list1, item, position, id) -> {
-            //Create a bundle to pass data to the new fragment
-            Bundle dataToPass = new Bundle();
-            dataToPass.putString(ITEM_SELECTED, contactsList.get(position).name );
-            dataToPass.putInt(ITEM_POSITION, position);
-            dataToPass.putLong(ITEM_ID, id);
-
-                Intent nextActivity = new Intent(MainActivity.this, DrinkOnClickActivity.class);
-                nextActivity.putExtras(dataToPass); //send data to next activity
-                startActivity(nextActivity); //make the transition
-
-        });
-
 
         loadDataFromDatabase();
 
-        myAdapter = new MyOwnAdapter();
-        list.setAdapter(myAdapter);
+        //Causing Crash
+       // progressBar = findViewById(R.id.progressBar);
+        //progressBar.setVisibility(View.VISIBLE);
 
-        //database
-        list.setOnItemLongClickListener((parent, view, position, id) -> {
-            showContact(position);
-            return false;
+        RVAdapter adapter;
+
+        //When search is click text in the EditText is pass to the list with plus sign in space
+        clickBtnSearch.setOnClickListener(click -> {
+
+
+            //etSearch(EditText for search) is in activity_main
+            search = findViewById(R.id.etSearch);
+            editSearch = search.getText().toString();
+
+            //check search is not empty
+            if (editSearch != null) {
+                //Replace space in search with add sign require by API fromate
+                editSearch = editSearch.replaceAll("\\s", "+");
+
+                MyHTTPRequest req = new MyHTTPRequest();
+                req.execute("https://www.thecocktaildb.com/api/json/v1/1/search.php?s=" + editSearch);  //Type 1
+                useAdapter();
+            }
+
+
         });
-
-//        arrayAdapter = new ArrayAdapter<String>(getApplicationContext(),
-//                android.R.layout.simple_list_item_1, pic);
-
-
-        clickBtnSearch.setOnClickListener ( click-> {
-            //
-            String name = nameEdit.getText().toString();
-
-            //add to the database and get the new ID
-            ContentValues newRowValues = new ContentValues();
-
-            //Now provide a value for every database column defined in MyOpener.java:
-            //put string name in the NAME column:
-            newRowValues.put(MyOpener.COL_NAME, name);
-
-            long newId = db.insert(MyOpener.TABLE_NAME, null, newRowValues);
-
-            Contact newContact = new Contact(name, newId);
-
-            contactsList.add(newContact);
-
-            myAdapter.notifyDataSetChanged();
-
-            nameEdit.setText("");
-//            arrayAdapter.notifyDataSetChanged();
-
-
-            Toast.makeText(this, "Inserted item id:"+newId, Toast.LENGTH_LONG).show();
-//            if(editSearch != null)
-//                editSearch = editSearch.replaceAll("\\s","+");
-//         //
-////            contactsList.add(newContact);
-//            pic.add(editSearch);
-//            list.setAdapter(arrayAdapter);
-//            arrayAdapter.notifyDataSetChanged();
-         });
-
-
     }
 
-
-    //database
     private void loadDataFromDatabase()
     {
         //get a database connection:
@@ -159,11 +142,11 @@ public class MainActivity extends AppCompatActivity {
         //iterate over the results, return true if there is a next item:
         while(results.moveToNext())
         {
-          String name = results.getString(nameColIndex);
+            String name = results.getString(nameColIndex);
             long id = results.getLong(idColIndex);
 
             //add the new Contact to the array list:
-            contactsList.add(new Contact(name, id));
+            arrayDrinkInfo.add(new DrinkInfo(name));
         }
     }
 
@@ -171,122 +154,144 @@ public class MainActivity extends AppCompatActivity {
     protected void showContact(int position)
     {
 
-        Contact selectedContact = contactsList.get(position);
+        DrinkInfo selectedDrink = arrayDrinkInfo.get(position);
         View contact_view = getLayoutInflater().inflate(R.layout.contact_edit, null);
         //get the TextViews
         EditText rowName = contact_view.findViewById(R.id.row_name);
         TextView rowId = contact_view.findViewById(R.id.row_id);
 
         //set the fields for the alert dialog
-        rowName.setText(selectedContact.getName());
-        rowId.setText("id:" + selectedContact.getId());
+        rowName.setText(selectedDrink.getDrinkName());
 
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("You clicked on item #" + position)
-                    .setMessage("You can update the fields and then click update to save in the database")
-                    .setView(contact_view) //add the 3 edit texts showing the contact information
-                    .setPositiveButton("Update", (click, b) -> {
-                        selectedContact.update(rowName.getText().toString());
-//                    updateContact(selectedContact);
-                        myAdapter.notifyDataSetChanged(); //the email and name have changed so rebuild the list
-                    })
-                    .setNegativeButton("Delete", (click, b) -> {
-                        deleteContact(selectedContact); //remove the contact from database
-                        contactsList.remove(position); //remove the contact from contact list
-                        myAdapter.notifyDataSetChanged(); //there is one less item so update the list
-                    })
-                    .setNeutralButton("dismiss", (click, b) -> {
-                    })
-                    .create().show();
-            //
-        }
-
-
-
-//    protected void updateContact(Contact c)
-//    {
-//        //Create a ContentValues object to represent a database row:
-//        ContentValues updatedValues = new ContentValues();
-//        updatedValues.put(MyOpener.COL_NAME, c.getName());
-//        db.update(MyOpener.TABLE_NAME, updatedValues, MyOpener.COL_ID + "= ?", new String[] {Long.toString(c.getId())});
-//    }
-
-    protected void deleteContact(Contact c)
-    {
-        db.delete(MyOpener.TABLE_NAME, MyOpener.COL_ID + "= ?", new String[] {Long.toString(c.getId())});
+//Need to change with RecycleView still trying to get data from HTTP
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("You clicked on item #" + position)
+                .setMessage("You can update the fields and then click update to save in the database")
+                .setView(contact_view) //add the 3 edit texts showing the contact information
+                .setPositiveButton("Update", (click, b) -> {
+                    selectedDrink.update(rowName.getText().toString());
+/                 updateContact(selectedContact);
+                    adapter.notifyDataSetChanged(); //the email and name have changed so rebuild the list
+                })
+                .setNegativeButton("Delete", (click, b) -> {
+                    deleteDrink(selectedDrink); //remove the contact from database
+                    arrayDrinkInfo.remove(position); //remove the contact from contact list
+                    adapter.notifyDataSetChanged(); //there is one less item so update the list
+                })
+                .setNeutralButton("dismiss", (click, b) -> {
+                })
+                .create().show();
     }
 
 
-    protected class MyOwnAdapter extends BaseAdapter
-    {
+
+    public void useAdapter() {
+        adapter = new RVAdapter(this, arrayDrinkInfo);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
+        search.setText("");
+    }
+
+    private class MyHTTPRequest extends AsyncTask<String, Integer, String> {
+        String pic ;
+        String inst;
+        String ing1;
+        String ing2;
+        String ing3;
+        Bitmap bmp;
+        String name;
+
         @Override
-        public int getCount() {
-            return contactsList.size();
+        protected String doInBackground(String... args) {
+            try {
+
+                //create a URL object of what server to contact:
+                URL url = new URL(args[0]);
+
+                //open the connection
+                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+
+                //wait for data:
+                InputStream response = urlConnection.getInputStream();
+
+                BufferedReader reader = new BufferedReader(new InputStreamReader(response, "UTF-8"), 8);
+                StringBuilder sb = new StringBuilder();
+
+                String line = null;
+                while ((line = reader.readLine()) != null)
+                {
+                    sb.append(line + "\n");
+                }
+                String result = sb.toString(); //result is the whole string
+
+
+
+                // convert string to JSON: Look at slide 27:
+                JSONObject drinksReport = new JSONObject(result);
+                JSONArray drinksArray = drinksReport.getJSONArray("drinks");
+
+                for(int i =0; i < drinksArray.length(); i++) {
+                    JSONObject obj = drinksArray.getJSONObject(i);
+                    pic = obj.getString("strDrinkThumb");
+
+                    publishProgress(50);
+                    name = obj.getString("strDrink");
+                    inst = obj.getString("strInstructions");
+                    ing1 = obj.getString("strIngredient1");
+                    ing2 = obj.getString("strIngredient2");
+                    ing3 = obj.getString("strIngredient3");
+                    publishProgress(100);
+
+
+                    // bmp = BitmapFactory.decodeStream(response);
+
+                    int j = 0; j++;
+                }
+                 drinkName = name;
+
+            }
+            catch (Exception e)
+            {
+
+            }
+
+            return "Done";
         }
 
-        public Contact getItem(int position){
-            return contactsList.get(position);
-        }
-
-        public View getView(int position, View old, ViewGroup parent)
+        public void onProgressUpdate(Integer ... args)
         {
-            View newView = getLayoutInflater().inflate(R.layout.contact_row, parent, false );
 
-            Contact thisRow = getItem(position);
+            progressBar.setVisibility(View.VISIBLE);
+            progressBar.setProgress(args[0]);
 
-            //get the TextViews
-            TextView rowName = (TextView)newView.findViewById(R.id.row_name);
-            TextView rowId = (TextView)newView.findViewById(R.id.row_id);
-
-            //update the text fields:
-            rowName.setText(  thisRow.getName());
-
-            rowId.setText("id:" + thisRow.getId());
-
-            //return the row:
-            return newView;
         }
-
-        //last week we returned (long) position. Now we return the object's database id that we get from line 71
-        public long getItemId(int position)
+/*
+        //causing crash
+        public void onPostExecute(String fromDoInBackground)
         {
-            return getItem(position).getId();
+            ins = findViewById(R.id.howToMake);
+            in1 = findViewById(R.id.ing1);
+            in2 = findViewById(R.id.ing2);
+            in3 = findViewById(R.id.ing3);
+            photo = findViewById(R.id.imageView);
+
+            ins.setText(inst);
+            in1.setText(ing1);
+            in2.setText(ing2);
+            in3.setText(ing3);
+            //    photo.setImageURI(Uri.parse(pic));
+            //photo.setImageURI(Uri.parse(pic));
+
+
         }
+*/
+        }
+
+
     }
 
-    /*
-    private class MyListAdapter extends BaseAdapter {
 
-        @Override
-        public int getCount() {
-            return pic.size();
-        }
 
-        @Override
-        public Object getItem(int i) {
-            return pic.get(i);
-        }
-
-        @Override
-        public long getItemId(int i) {
-            return i;
-        }
-
-        @Override
-        public View getView(int i, View view, ViewGroup viewGroup) {
-
-            LayoutInflater inflater = getLayoutInflater();
-            View newView;
-            TextView tView;
-
-            newView = inflater.inflate(R.layout.listDrink, viewGroup, false);
-            tView = newView.findViewById(R.id.etSearch);
-            tView.setText(getItem(i).toString());
-
-            return newView;
-        }
-    }
-
-     */
-}

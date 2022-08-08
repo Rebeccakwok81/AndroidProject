@@ -1,7 +1,7 @@
 package com.cst2335.cocktail_database;
 
 public class Contact {
-    protected String name;
+    protected String name ;
     protected long id;
 
     public Contact(String m, long i) {

@@ -1,6 +1,7 @@
 package com.cst2335.cocktail_database;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -9,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -21,6 +23,19 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
     String editSearch;
 
     SQLiteDatabase db;
+    String currentDrinkName = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,22 +101,25 @@ public class MainActivity extends AppCompatActivity {
                 //Replace space in search with add sign require by API fromate
                 editSearch = editSearch.replaceAll("\\s", "+");
 
-                setObject();
+                MyHTTPRequest req = new MyHTTPRequest();
+                req.execute("https://www.thecocktaildb.com/api/json/v1/1/search.php?s=" + editSearch);  //Type 1
+
                 useAdapter();
             }
+
+
         });
     }
 
     /**
      * method is to add info into object
      */
-    public void setObject() {
+    public void setSearchData() {
 
-        contactsList.add(new Contact(editSearch, id));
     }
 
 
-    public void useAdapter(){
+    public void useAdapter() {
         RVAdapter adapter = new RVAdapter(this, contactsList);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
@@ -110,33 +129,66 @@ public class MainActivity extends AppCompatActivity {
         search.setText("");
     }
 
-    private void loadDataFromDatabase()
-    {
-        //get a database connection:
-        MyOpener dbOpener = new MyOpener(this);
-        db = dbOpener.getWritableDatabase(); //This calls onCreate() if you've never built the table before, or onUpgrade if the version here is newer
+    private class MyHTTPRequest extends AsyncTask<String, Integer, String> {
+        String pic ;
+        String inst;
+        String ing1;
+        String ing2;
+        String ing3;
+        Bitmap bmp;
+
+        @Override
+        protected String doInBackground(String... args) {
+            try {
+
+                //create a URL object of what server to contact:
+                URL url = new URL(args[0]);
+
+                //open the connection
+                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+
+                //wait for data:
+                InputStream response = urlConnection.getInputStream();
+
+                BufferedReader reader = new BufferedReader(new InputStreamReader(response, "UTF-8"), 8);
+                StringBuilder sb = new StringBuilder();
+
+                String line = null;
+                while ((line = reader.readLine()) != null)
+                {
+                    sb.append(line + "\n");
+                }
+                String result = sb.toString(); //result is the whole string
 
 
-        // We want to get all of the columns. Look at MyOpener.java for the definitions:
-        java.lang.String[] columns = {MyOpener.COL_ID,  MyOpener.COL_NAME};
-        //query all the results from the database:
-        Cursor results = db.query(false, MyOpener.TABLE_NAME, columns, null, null, null, null, null, null);
+                // convert string to JSON: Look at slide 27:
+                JSONObject drinksReport = new JSONObject(result);
+                JSONArray drinksArray = drinksReport.getJSONArray("drinks");
+                for(int i =0; i < drinksArray.length(); i++) {
+                    JSONObject obj = drinksArray.getJSONObject(i);
+                    pic = obj.getString("strDrinkThumb");
+                    publishProgress(50);
+                    inst = obj.getString("strInstructions");
+                    ing1 = obj.getString("strIngredient1");
+                    ing2 = obj.getString("strIngredient2");
+                    ing3 = obj.getString("strIngredient3");
+                    publishProgress(100);
 
-        //Now the results object has rows of results that match the query.
-        //find the column indices:
+                    // bmp = BitmapFactory.decodeStream(response);
 
-        int nameColIndex = results.getColumnIndex(MyOpener.COL_NAME);
-        int idColIndex = results.getColumnIndex(MyOpener.COL_ID);
+                    int j = 0; j++;
+                }
 
-        //iterate over the results, return true if there is a next item:
-        while(results.moveToNext())
-        {
-            String name = results.getString(nameColIndex);
-            long id = results.getLong(idColIndex);
+            }
+            catch (Exception e)
+            {
 
-            //add the new Contact to the array list:
-            contactsList.add(new Contact(name, id));
+            }
+            return "Done";
+        }
+
         }
     }
-}
+
+
 

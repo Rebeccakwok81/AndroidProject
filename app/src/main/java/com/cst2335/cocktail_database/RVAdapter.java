@@ -21,7 +21,6 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.MyViewHolder> {
     private LayoutInflater layout;
 
 
-
     public RVAdapter(Context context, ArrayList<Contact> contactsList){
         this.contactsList = contactsList;
         layout = LayoutInflater.from(context);
@@ -29,11 +28,11 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.MyViewHolder> {
     }
 
     public class  MyViewHolder extends RecyclerView.ViewHolder{
-        private TextView search;
+        private TextView drinkName;
 
         public MyViewHolder(@NonNull View v) {
             super(v);
-            search = v.findViewById(R.id.list_item_drink);
+            drinkName = v.findViewById(R.id.list_item_drink);
         }
     }
 
@@ -47,7 +46,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.MyViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
 
-        holder.search.setText(contactsList.get(position).toString());
+        holder.drinkName.setText(contactsList.get(position).getName());
 /*
         holder.search.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -63,12 +63,9 @@ the previous search term is shown.
 
 public class MainActivity extends AppCompatActivity {
 
-    //RecyclerView Objects
-    ArrayList<Contact> contactsList = new ArrayList<>();
 
     //Android Class
     RecyclerView recyclerView;
-    //End of RecyclerView Objects
 
     //hold search input
     EditText search;
@@ -77,14 +74,20 @@ public class MainActivity extends AppCompatActivity {
     String editSearch;
 
     SQLiteDatabase db;
+
+    //list of drink from HTTP
     ArrayList <DrinkInfo> arrayDrinkInfo = new ArrayList<>();
 
+    //Globel variable for AsyncTask
     TextView ins;
     TextView in1;
     TextView in2;
     TextView in3;
     ImageView photo;
     ProgressBar progressBar;
+    String drinkName;
+
+    RVAdapter adapter;
 
 
     @Override
@@ -92,12 +95,22 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+
         //rvDrink is in activity_main.xml
         recyclerView = findViewById(R.id.rvDrink);
 
 
         //btnSearch(search button) is in activity_main
         Button clickBtnSearch = findViewById(R.id.btnSearch);
+
+        loadDataFromDatabase();
+
+        //Causing Crash
+        progressBar = findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.VISIBLE);
+
+        RVAdapter adapter;
 
         //When search is click text in the EditText is pass to the list with plus sign in space
         clickBtnSearch.setOnClickListener(click -> {
@@ -114,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
 
                 MyHTTPRequest req = new MyHTTPRequest();
                 req.execute("https://www.thecocktaildb.com/api/json/v1/1/search.php?s=" + editSearch);  //Type 1
-
+                setSearchData();
                 useAdapter();
             }
 
@@ -122,18 +135,80 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void loadDataFromDatabase()
+    {
+        //get a database connection:
+        MyOpener dbOpener = new MyOpener(this);
+        db = dbOpener.getWritableDatabase(); //This calls onCreate() if you've never built the table before, or onUpgrade if the version here is newer
+
+
+        // We want to get all of the columns. Look at MyOpener.java for the definitions:
+        java.lang.String[] columns = {MyOpener.COL_ID,  MyOpener.COL_NAME};
+        //query all the results from the database:
+        Cursor results = db.query(false, MyOpener.TABLE_NAME, columns, null, null, null, null, null, null);
+
+        //Now the results object has rows of results that match the query.
+        //find the column indices:
+
+        int nameColIndex = results.getColumnIndex(MyOpener.COL_NAME);
+        int idColIndex = results.getColumnIndex(MyOpener.COL_ID);
+
+        //iterate over the results, return true if there is a next item:
+        while(results.moveToNext())
+        {
+            String name = results.getString(nameColIndex);
+            long id = results.getLong(idColIndex);
+
+            //add the new Contact to the array list:
+            arrayDrinkInfo.add(new DrinkInfo(name));
+        }
+    }
+
+
+    protected void showContact(int position)
+    {
+
+        DrinkInfo selectedDrink = arrayDrinkInfo.get(position);
+        View contact_view = getLayoutInflater().inflate(R.layout.contact_edit, null);
+        //get the TextViews
+        EditText rowName = contact_view.findViewById(R.id.row_name);
+        TextView rowId = contact_view.findViewById(R.id.row_id);
+
+        //set the fields for the alert dialog
+        rowName.setText(selectedDrink.getDrinkName());
+
+//Need to change with RecycleView still trying to get data from HTTP
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("You clicked on item #" + position)
+                .setMessage("You can update the fields and then click update to save in the database")
+                .setView(contact_view) //add the 3 edit texts showing the contact information
+                .setPositiveButton("Update", (click, b) -> {
+                    selectedDrink.update(rowName.getText().toString());
+//                    updateContact(selectedContact);
+                    adapter.notifyDataSetChanged(); //the email and name have changed so rebuild the list
+                })
+                .setNegativeButton("Delete", (click, b) -> {
+                    deleteDrink(selectedDrink); //remove the contact from database
+                    arrayDrinkInfo.remove(position); //remove the contact from contact list
+                    adapter.notifyDataSetChanged(); //there is one less item so update the list
+                })
+                .setNeutralButton("dismiss", (click, b) -> {
+                })
+                .create().show();
+        //
+    }
+
     /**
      * method is to add info into object
      */
-    public void setSearchData(String drinkName) {
 
-        arrayDrinkInfo.add(new DrinkInfo(drinkName));
+    public void setSearchData() {
 
     }
 
 
     public void useAdapter() {
-        RVAdapter adapter = new RVAdapter(this, arrayDrinkInfo);
+        adapter = new RVAdapter(this, arrayDrinkInfo);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -149,7 +224,7 @@ public class MainActivity extends AppCompatActivity {
         String ing2;
         String ing3;
         Bitmap bmp;
-        String drinkName;
+        String name;
 
         @Override
         protected String doInBackground(String... args) {
@@ -175,45 +250,56 @@ public class MainActivity extends AppCompatActivity {
                 String result = sb.toString(); //result is the whole string
 
 
+
                 // convert string to JSON: Look at slide 27:
                 JSONObject drinksReport = new JSONObject(result);
                 JSONArray drinksArray = drinksReport.getJSONArray("drinks");
 
-              //do{
-                   // JSONObject obj = drinksArray.getJSONObject(id);
-
-              // }while (drinksReport.getBoolean("drinks"));
-
-
-
                 for(int i =0; i < drinksArray.length(); i++) {
                     JSONObject obj = drinksArray.getJSONObject(i);
-                    drinkName = obj.getString("strDrink");
-                    setSearchData(drinkName);
                     pic = obj.getString("strDrinkThumb");
-                    publishProgress(100);
+
+                    publishProgress(50);
+                    name = obj.getString("strDrink");
                     inst = obj.getString("strInstructions");
                     ing1 = obj.getString("strIngredient1");
                     ing2 = obj.getString("strIngredient2");
                     ing3 = obj.getString("strIngredient3");
-                    publishProgress(150);
+                    publishProgress(100);
+
 
                     // bmp = BitmapFactory.decodeStream(response);
 
                     int j = 0; j++;
                 }
+                 drinkName = name;
 
             }
             catch (Exception e)
             {
 
             }
+
             return "Done";
         }
 
+        public void onProgressUpdate(Integer ... args)
+        {
+
+            progressBar.setVisibility(View.VISIBLE);
+            progressBar.setProgress(args[0]);
+
+        }
+
+        //causing crash
         public void onPostExecute(String fromDoInBackground)
         {
-            arrayDrinkInfo.add(new DrinkInfo("drinkName"));
+            ins = findViewById(R.id.howToMake);
+            in1 = findViewById(R.id.ing1);
+            in2 = findViewById(R.id.ing2);
+            in3 = findViewById(R.id.ing3);
+            photo = findViewById(R.id.imageView);
+
             ins.setText(inst);
             in1.setText(ing1);
             in2.setText(ing2);
@@ -223,6 +309,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         }
+
         }
 
 

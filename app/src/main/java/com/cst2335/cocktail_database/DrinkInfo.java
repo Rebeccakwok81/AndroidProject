@@ -12,7 +12,7 @@ public class DrinkInfo {
         return drinkName;
     }
 
-    public void setDrinkNameA() {
+    public void setDrinkNameA(String drinkName) {
         this.drinkName = drinkName;
     }
 }

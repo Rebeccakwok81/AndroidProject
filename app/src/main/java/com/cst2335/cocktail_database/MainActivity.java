@@ -107,8 +107,8 @@ public class MainActivity extends AppCompatActivity {
         loadDataFromDatabase();
 
         //Causing Crash
-        progressBar = findViewById(R.id.progressBar);
-        progressBar.setVisibility(View.VISIBLE);
+       // progressBar = findViewById(R.id.progressBar);
+        //progressBar.setVisibility(View.VISIBLE);
 
         RVAdapter adapter;
 
@@ -127,7 +127,6 @@ public class MainActivity extends AppCompatActivity {
 
                 MyHTTPRequest req = new MyHTTPRequest();
                 req.execute("https://www.thecocktaildb.com/api/json/v1/1/search.php?s=" + editSearch);  //Type 1
-                setSearchData();
                 useAdapter();
             }
 
@@ -184,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
                 .setView(contact_view) //add the 3 edit texts showing the contact information
                 .setPositiveButton("Update", (click, b) -> {
                     selectedDrink.update(rowName.getText().toString());
-//                    updateContact(selectedContact);
+/                 updateContact(selectedContact);
                     adapter.notifyDataSetChanged(); //the email and name have changed so rebuild the list
                 })
                 .setNegativeButton("Delete", (click, b) -> {
@@ -195,16 +194,8 @@ public class MainActivity extends AppCompatActivity {
                 .setNeutralButton("dismiss", (click, b) -> {
                 })
                 .create().show();
-        //
     }
 
-    /**
-     * method is to add info into object
-     */
-
-    public void setSearchData() {
-
-    }
 
 
     public void useAdapter() {
@@ -290,7 +281,7 @@ public class MainActivity extends AppCompatActivity {
             progressBar.setProgress(args[0]);
 
         }
-
+/*
         //causing crash
         public void onPostExecute(String fromDoInBackground)
         {
@@ -309,7 +300,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         }
-
+*/
         }
 
 

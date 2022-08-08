@@ -32,18 +32,13 @@ import java.util.ArrayList;
 /*
     Your application should have an EditText for entering the name of a drink. There should also be a “search”
 button which sends the search term to the server and returns a list of drinks that match that name.
-
     The URL for searching is “https://www.thecocktaildb.com/api/json/v1/1/search.php?s=....”
 where … is the name that the user typed in.
-
     Your application must show a list of results in a RecyclerView, with each row showing a different result returned.
-
     If the user selects a drink from the list, your application will show the thumbnail picture,
 the instructions for making the drink, and the first 3 ingredients from the list of ingredients.
-
     Also in the detail fragment, the user can save the data to the device for offline viewing.
 The user must be able to view a list of their saved data and remove them from the database of favourites if they choose.
-
 The SharedPreferences should save the user’s search words so that the next time you start the application,
 the previous search term is shown.
 */
@@ -72,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
     TextView in3;
     ImageView photo;
     ProgressBar progressBar;
-    String drinkName;
+    ArrayList <String> drinkName = new ArrayList<>();
 
     RVAdapter adapter;
 
@@ -91,10 +86,10 @@ public class MainActivity extends AppCompatActivity {
         //btnSearch(search button) is in activity_main
         Button clickBtnSearch = findViewById(R.id.btnSearch);
 
-        loadDataFromDatabase();
+       // loadDataFromDatabase();
 
         //Causing Crash
-       // progressBar = findViewById(R.id.progressBar);
+        // progressBar = findViewById(R.id.progressBar);
         //progressBar.setVisibility(View.VISIBLE);
 
         RVAdapter adapter;
@@ -114,13 +109,24 @@ public class MainActivity extends AppCompatActivity {
 
                 MyHTTPRequest req = new MyHTTPRequest();
                 req.execute("https://www.thecocktaildb.com/api/json/v1/1/search.php?s=" + editSearch);  //Type 1
-                useAdapter();
+                setData();
+
             }
 
 
         });
     }
+    public void setData () {
+        for (int i = 0; i < drinkName.size(); i++) {
+            arrayDrinkInfo.add(new DrinkInfo(drinkName.get(i)));
+            System.out.println(drinkName.get(i));
+            String temp = drinkName.get(i);
+            System.out.println(arrayDrinkInfo.get(i).getDrinkName());
+            useAdapter();
+        }
+        }
 
+/*
     private void loadDataFromDatabase()
     {
         //get a database connection:
@@ -149,8 +155,8 @@ public class MainActivity extends AppCompatActivity {
             arrayDrinkInfo.add(new DrinkInfo(name));
         }
     }
-
-
+*/
+    /*
     protected void showContact(int position)
     {
 
@@ -183,84 +189,83 @@ public class MainActivity extends AppCompatActivity {
                 .create().show();
     }
 
+*/
 
-
-    public void useAdapter() {
-        adapter = new RVAdapter(this, arrayDrinkInfo);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
-        search.setText("");
-    }
-
-    private class MyHTTPRequest extends AsyncTask<String, Integer, String> {
-        String pic ;
-        String inst;
-        String ing1;
-        String ing2;
-        String ing3;
-        Bitmap bmp;
-        String name;
-
-        @Override
-        protected String doInBackground(String... args) {
-            try {
-
-                //create a URL object of what server to contact:
-                URL url = new URL(args[0]);
-
-                //open the connection
-                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-
-                //wait for data:
-                InputStream response = urlConnection.getInputStream();
-
-                BufferedReader reader = new BufferedReader(new InputStreamReader(response, "UTF-8"), 8);
-                StringBuilder sb = new StringBuilder();
-
-                String line = null;
-                while ((line = reader.readLine()) != null)
-                {
-                    sb.append(line + "\n");
-                }
-                String result = sb.toString(); //result is the whole string
-
-
-
-                // convert string to JSON: Look at slide 27:
-                JSONObject drinksReport = new JSONObject(result);
-                JSONArray drinksArray = drinksReport.getJSONArray("drinks");
-
-                for(int i =0; i < drinksArray.length(); i++) {
-                    JSONObject obj = drinksArray.getJSONObject(i);
-                    pic = obj.getString("strDrinkThumb");
-
-                    publishProgress(50);
-                    name = obj.getString("strDrink");
-                    inst = obj.getString("strInstructions");
-                    ing1 = obj.getString("strIngredient1");
-                    ing2 = obj.getString("strIngredient2");
-                    ing3 = obj.getString("strIngredient3");
-                    publishProgress(100);
-
-
-                    // bmp = BitmapFactory.decodeStream(response);
-
-                    int j = 0; j++;
-                }
-                 drinkName = name;
-
-            }
-            catch (Exception e)
-            {
-
-            }
-
-            return "Done";
+        public void useAdapter () {
+            adapter = new RVAdapter(this, arrayDrinkInfo);
+            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+            recyclerView.setLayoutManager(layoutManager);
+            recyclerView.setItemAnimator(new DefaultItemAnimator());
+            recyclerView.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
+            search.setText("");
         }
 
+        private class MyHTTPRequest extends AsyncTask<String, Integer, String> {
+            String pic;
+            String inst;
+            String ing1;
+            String ing2;
+            String ing3;
+            Bitmap bmp;
+            String name;
+
+            @Override
+            protected String doInBackground(String... args) {
+                try {
+
+                    //create a URL object of what server to contact:
+                    URL url = new URL(args[0]);
+
+                    //open the connection
+                    HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+
+                    //wait for data:
+                    InputStream response = urlConnection.getInputStream();
+
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(response, "UTF-8"), 8);
+                    StringBuilder sb = new StringBuilder();
+
+                    String line = null;
+                    while ((line = reader.readLine()) != null) {
+                        sb.append(line + "\n");
+                    }
+                    String result = sb.toString(); //result is the whole string
+
+
+                    // convert string to JSON: Look at slide 27:
+                    JSONObject drinksReport = new JSONObject(result);
+                    JSONArray drinksArray = drinksReport.getJSONArray("drinks");
+
+                    for (int i = 0; i < drinksArray.length(); i++) {
+                        JSONObject obj = drinksArray.getJSONObject(i);
+                        pic = obj.getString("strDrinkThumb");
+
+                        publishProgress(50);
+                        drinkName.add(obj.getString("strDrink"));
+                        name = obj.getString("strDrink");
+                        inst = obj.getString("strInstructions");
+                        ing1 = obj.getString("strIngredient1");
+                        ing2 = obj.getString("strIngredient2");
+                        ing3 = obj.getString("strIngredient3");
+                        publishProgress(100);
+
+
+                        // bmp = BitmapFactory.decodeStream(response);
+
+                        int j = 0;
+                        j++;
+                    }
+
+
+                } catch (Exception e) {
+
+                }
+
+                return "Done";
+            }
+
+        /*
         public void onProgressUpdate(Integer ... args)
         {
 
@@ -268,7 +273,6 @@ public class MainActivity extends AppCompatActivity {
             progressBar.setProgress(args[0]);
 
         }
-/*
         //causing crash
         public void onPostExecute(String fromDoInBackground)
         {
@@ -277,21 +281,15 @@ public class MainActivity extends AppCompatActivity {
             in2 = findViewById(R.id.ing2);
             in3 = findViewById(R.id.ing3);
             photo = findViewById(R.id.imageView);
-
             ins.setText(inst);
             in1.setText(ing1);
             in2.setText(ing2);
             in3.setText(ing3);
             //    photo.setImageURI(Uri.parse(pic));
             //photo.setImageURI(Uri.parse(pic));
-
-
         }
 */
         }
 
 
-    }
-
-
-
+}

@@ -18,6 +18,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 
 public class DrinkOnClickActivity extends AppCompatActivity {
 
@@ -27,6 +28,7 @@ public class DrinkOnClickActivity extends AppCompatActivity {
     TextView in3;
     ImageView photo;
     ProgressBar progressBar;
+    ArrayList <DrinkInfo> drinkName = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,21 +49,19 @@ public class DrinkOnClickActivity extends AppCompatActivity {
     }
 
 
-    //Type1     Type2   Type3
-    private class MyHTTPRequest extends AsyncTask< String, Integer, String>
-    {
 
-        String pic ;
+    //
+    private class MyHTTPRequest extends AsyncTask<String, Integer, String> {
+        String pic;
         String inst;
         String ing1;
         String ing2;
         String ing3;
         Bitmap bmp;
+        String name;
 
-
-        //Type3                Type1
-        public String doInBackground(String ... args)
-        {
+        @Override
+        protected String doInBackground(String... args) {
             try {
 
                 //create a URL object of what server to contact:
@@ -73,15 +73,11 @@ public class DrinkOnClickActivity extends AppCompatActivity {
                 //wait for data:
                 InputStream response = urlConnection.getInputStream();
 
-
-                //JSON reading:   Look at slide 26
-                //Build the entire string response:
                 BufferedReader reader = new BufferedReader(new InputStreamReader(response, "UTF-8"), 8);
                 StringBuilder sb = new StringBuilder();
 
                 String line = null;
-                while ((line = reader.readLine()) != null)
-                {
+                while ((line = reader.readLine()) != null) {
                     sb.append(line + "\n");
                 }
                 String result = sb.toString(); //result is the whole string
@@ -90,56 +86,60 @@ public class DrinkOnClickActivity extends AppCompatActivity {
                 // convert string to JSON: Look at slide 27:
                 JSONObject drinksReport = new JSONObject(result);
                 JSONArray drinksArray = drinksReport.getJSONArray("drinks");
-                for(int i =0; i < drinksArray.length(); i++) {
+
+                for (int i = 0; i < drinksArray.length(); i++) {
                     JSONObject obj = drinksArray.getJSONObject(i);
                     pic = obj.getString("strDrinkThumb");
+
                     publishProgress(50);
+                    name = obj.getString("strDrink");
                     inst = obj.getString("strInstructions");
                     ing1 = obj.getString("strIngredient1");
                     ing2 = obj.getString("strIngredient2");
                     ing3 = obj.getString("strIngredient3");
                     publishProgress(100);
 
+
                     // bmp = BitmapFactory.decodeStream(response);
 
-                    int j = 0; j++;
+                    int j = 0;
+                    j++;
                 }
 
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
 
             }
 
             return "Done";
         }
 
-        //Type 2
-        public void onProgressUpdate(Integer ... args)
-        {
+        public void onProgressUpdate(Integer... args) {
 
             progressBar.setVisibility(View.VISIBLE);
             progressBar.setProgress(args[0]);
 
         }
-        //Type3
+/*
+        //causing crash
         public void onPostExecute(String fromDoInBackground)
         {
-
+            ins = findViewById(R.id.howToMake);
+            in1 = findViewById(R.id.ing1);
+            in2 = findViewById(R.id.ing2);
+            in3 = findViewById(R.id.ing3);
+            photo = findViewById(R.id.imageView);
 
             ins.setText(inst);
             in1.setText(ing1);
             in2.setText(ing2);
             in3.setText(ing3);
-        //    photo.setImageURI(Uri.parse(pic));
+            //    photo.setImageURI(Uri.parse(pic));
             //photo.setImageURI(Uri.parse(pic));
 
 
         }
-
-
+*/
     }
-
 
 }
 

@@ -45,7 +45,6 @@ the previous search term is shown.
 
 public class MainActivity extends AppCompatActivity {
 
-
     //Android Class
     RecyclerView recyclerView;
 
@@ -55,14 +54,9 @@ public class MainActivity extends AppCompatActivity {
     //hold search input with plus sign
     String editSearch;
 
-    SQLiteDatabase db;
-
     //list of drink from HTTP
     ArrayList <DrinkInfo>  arrayDrinkInfo = new ArrayList<>();
-    //ArrayList <DrinkInfo>  arrayDrinkInfo;
-
     ArrayList <String> drinkName = new ArrayList<>();
-    //ArrayList <String> drinkName;
 
     //Globel variable for AsyncTask
     TextView ins;
@@ -86,10 +80,11 @@ public class MainActivity extends AppCompatActivity {
         //etSearch(EditText for search) is in activity_main
         search = findViewById(R.id.etSearch);
 
+
         //btnSearch(search button) is in activity_main
         Button clickBtnSearch = findViewById(R.id.btnSearch);
+        Button clickBtnFravor = findViewById(R.id.btnFavorites);
 
-       // loadDataFromDatabase();
 
         //Causing Crash
         // progressBar = findViewById(R.id.progressBar);
@@ -99,8 +94,7 @@ public class MainActivity extends AppCompatActivity {
         clickBtnSearch.setOnClickListener(click -> {
 
             //reset array can not imp because botton require click twice
-           // arrayDrinkInfo.clear();
-           // drinkName.clear();
+
 
             editSearch = search.getText().toString();
             //check search is not empty
@@ -143,73 +137,6 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         search.setText("");
     }
-
-/*
-    private void loadDataFromDatabase()
-    {
-        //get a database connection:
-        MyOpener dbOpener = new MyOpener(this);
-        db = dbOpener.getWritableDatabase(); //This calls onCreate() if you've never built the table before, or onUpgrade if the version here is newer
-
-
-        // We want to get all of the columns. Look at MyOpener.java for the definitions:
-        java.lang.String[] columns = {MyOpener.COL_ID,  MyOpener.COL_NAME};
-        //query all the results from the database:
-        Cursor results = db.query(false, MyOpener.TABLE_NAME, columns, null, null, null, null, null, null);
-
-        //Now the results object has rows of results that match the query.
-        //find the column indices:
-
-        int nameColIndex = results.getColumnIndex(MyOpener.COL_NAME);
-        int idColIndex = results.getColumnIndex(MyOpener.COL_ID);
-
-        //iterate over the results, return true if there is a next item:
-        while(results.moveToNext())
-        {
-            String name = results.getString(nameColIndex);
-            long id = results.getLong(idColIndex);
-
-            //add the new Contact to the array list:
-            arrayDrinkInfo.add(new DrinkInfo(name));
-        }
-    }
-*/
-    /*
-    protected void showContact(int position)
-    {
-
-        DrinkInfo selectedDrink = arrayDrinkInfo.get(position);
-        View contact_view = getLayoutInflater().inflate(R.layout.contact_edit, null);
-        //get the TextViews
-        EditText rowName = contact_view.findViewById(R.id.row_name);
-        TextView rowId = contact_view.findViewById(R.id.row_id);
-
-        //set the fields for the alert dialog
-        rowName.setText(selectedDrink.getDrinkName());
-
-//Need to change with RecycleView still trying to get data from HTTP
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("You clicked on item #" + position)
-                .setMessage("You can update the fields and then click update to save in the database")
-                .setView(contact_view) //add the 3 edit texts showing the contact information
-                .setPositiveButton("Update", (click, b) -> {
-                    selectedDrink.update(rowName.getText().toString());
-/                 updateContact(selectedContact);
-                    adapter.notifyDataSetChanged(); //the email and name have changed so rebuild the list
-                })
-                .setNegativeButton("Delete", (click, b) -> {
-                    deleteDrink(selectedDrink); //remove the contact from database
-                    arrayDrinkInfo.remove(position); //remove the contact from contact list
-                    adapter.notifyDataSetChanged(); //there is one less item so update the list
-                })
-                .setNeutralButton("dismiss", (click, b) -> {
-                })
-                .create().show();
-    }
-
-*/
-
-
 
         private class MyHTTPRequest extends AsyncTask<String, Integer, String> {
             String pic;
@@ -259,7 +186,6 @@ public class MainActivity extends AppCompatActivity {
                         ing3 = obj.getString("strIngredient3");
                         publishProgress(100);
 
-
                         // bmp = BitmapFactory.decodeStream(response);
 
                         int j = 0;
@@ -296,6 +222,5 @@ public class MainActivity extends AppCompatActivity {
         }
 */
         }
-
 
 }

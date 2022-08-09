@@ -1,3 +1,4 @@
+
 package com.cst2335.cocktail_database;
 
 import android.content.Context;
@@ -9,7 +10,7 @@ import androidx.annotation.Nullable;
 public class MyOpener extends SQLiteOpenHelper {
 
     protected final static String DATABASE_NAME = " CocktailDB";
-    protected final static int VERSION_NUM = 1;
+    protected final static int VERSION_NUM = 24;
     public final static String TABLE_NAME = "COCKTAIL";
     public final static String COL_NAME = "NAME";
     public final static String COL_ID = "_id";

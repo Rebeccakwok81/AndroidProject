@@ -46,15 +46,13 @@ public class MainActivity extends AppCompatActivity {
     public static final String ITEM_ID = "ID";
 
 
-
     //    ArrayList<String> pic = new ArrayList<>();
     ArrayList<Contact> contactsList = new ArrayList<>();
-//    ArrayAdapter <String> arrayAdapter;
+    //    ArrayAdapter <String> arrayAdapter;
     MyOwnAdapter myAdapter;
 
     SQLiteDatabase db;
     private static int ACTIVITY_VIEW_CONTACT = 33;
-
 
 
     @Override
@@ -62,9 +60,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 //
-        EditText nameEdit = (EditText)findViewById(R.id.etSearch);
+        EditText nameEdit = findViewById(R.id.etSearch);
         Button clickBtnSearch = findViewById(R.id.btnSearch);
-        ListView list =  (ListView) findViewById(R.id.listDrink);
+        ListView list = (ListView) findViewById(R.id.listDrink);
 
 
         myAdapter = new MyOwnAdapter();
@@ -74,13 +72,16 @@ public class MainActivity extends AppCompatActivity {
         list.setOnItemClickListener((list1, item, position, id) -> {
             //Create a bundle to pass data to the new fragment
             Bundle dataToPass = new Bundle();
-            dataToPass.putString(ITEM_SELECTED, contactsList.get(position).name );
+            dataToPass.putString(ITEM_SELECTED, contactsList.get(position).name);
             dataToPass.putInt(ITEM_POSITION, position);
             dataToPass.putLong(ITEM_ID, id);
 
-                Intent nextActivity = new Intent(MainActivity.this, DrinkOnClickActivity.class);
-                nextActivity.putExtras(dataToPass); //send data to next activity
-                startActivity(nextActivity); //make the transition
+
+            Intent nextActivity = new Intent(MainActivity.this, DrinkOnClickActivity.class);
+            nextActivity.putExtras(dataToPass); //send data to next activity
+            // passing drink name from the row
+            nextActivity.putExtra("keywd", contactsList.get(position).name);
+            startActivity(nextActivity); //make the transition
 
         });
 
@@ -100,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
 //                android.R.layout.simple_list_item_1, pic);
 
 
-        clickBtnSearch.setOnClickListener ( click-> {
+        clickBtnSearch.setOnClickListener(click -> {
             //
             String name = nameEdit.getText().toString();
 
@@ -123,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
 //            arrayAdapter.notifyDataSetChanged();
 
 
-            Toast.makeText(this, "Inserted item id:"+newId, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Inserted item id:" + newId, Toast.LENGTH_LONG).show();
 //            if(editSearch != null)
 //                editSearch = editSearch.replaceAll("\\s","+");
 //         //
@@ -131,22 +132,21 @@ public class MainActivity extends AppCompatActivity {
 //            pic.add(editSearch);
 //            list.setAdapter(arrayAdapter);
 //            arrayAdapter.notifyDataSetChanged();
-         });
+        });
 
 
     }
 
 
     //database
-    private void loadDataFromDatabase()
-    {
+    private void loadDataFromDatabase() {
         //get a database connection:
         MyOpener dbOpener = new MyOpener(this);
         db = dbOpener.getWritableDatabase(); //This calls onCreate() if you've never built the table before, or onUpgrade if the version here is newer
 
 
         // We want to get all of the columns. Look at MyOpener.java for the definitions:
-        java.lang.String[] columns = {MyOpener.COL_ID,  MyOpener.COL_NAME};
+        java.lang.String[] columns = {MyOpener.COL_ID, MyOpener.COL_NAME};
         //query all the results from the database:
         Cursor results = db.query(false, MyOpener.TABLE_NAME, columns, null, null, null, null, null, null);
 
@@ -157,9 +157,8 @@ public class MainActivity extends AppCompatActivity {
         int idColIndex = results.getColumnIndex(MyOpener.COL_ID);
 
         //iterate over the results, return true if there is a next item:
-        while(results.moveToNext())
-        {
-          String name = results.getString(nameColIndex);
+        while (results.moveToNext()) {
+            String name = results.getString(nameColIndex);
             long id = results.getLong(idColIndex);
 
             //add the new Contact to the array list:
@@ -168,8 +167,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    protected void showContact(int position)
-    {
+    protected void showContact(int position) {
 
         Contact selectedContact = contactsList.get(position);
         View contact_view = getLayoutInflater().inflate(R.layout.contact_edit, null);
@@ -182,26 +180,20 @@ public class MainActivity extends AppCompatActivity {
         rowId.setText("id:" + selectedContact.getId());
 
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("You clicked on item #" + position)
-                    .setMessage("You can update the fields and then click update to save in the database")
-                    .setView(contact_view) //add the 3 edit texts showing the contact information
-                    .setPositiveButton("Update", (click, b) -> {
-                        selectedContact.update(rowName.getText().toString());
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("You clicked on item #" + position).setMessage("You can update the fields and then click update to save in the database").setView(contact_view) //add the 3 edit texts showing the contact information
+                .setPositiveButton("Update", (click, b) -> {
+                    selectedContact.update(rowName.getText().toString());
 //                    updateContact(selectedContact);
-                        myAdapter.notifyDataSetChanged(); //the email and name have changed so rebuild the list
-                    })
-                    .setNegativeButton("Delete", (click, b) -> {
-                        deleteContact(selectedContact); //remove the contact from database
-                        contactsList.remove(position); //remove the contact from contact list
-                        myAdapter.notifyDataSetChanged(); //there is one less item so update the list
-                    })
-                    .setNeutralButton("dismiss", (click, b) -> {
-                    })
-                    .create().show();
-            //
-        }
-
+                    myAdapter.notifyDataSetChanged(); //the email and name have changed so rebuild the list
+                }).setNegativeButton("Delete", (click, b) -> {
+                    deleteContact(selectedContact); //remove the contact from database
+                    contactsList.remove(position); //remove the contact from contact list
+                    myAdapter.notifyDataSetChanged(); //there is one less item so update the list
+                }).setNeutralButton("dismiss", (click, b) -> {
+                }).create().show();
+        //
+    }
 
 
 //    protected void updateContact(Contact c)
@@ -212,35 +204,32 @@ public class MainActivity extends AppCompatActivity {
 //        db.update(MyOpener.TABLE_NAME, updatedValues, MyOpener.COL_ID + "= ?", new String[] {Long.toString(c.getId())});
 //    }
 
-    protected void deleteContact(Contact c)
-    {
-        db.delete(MyOpener.TABLE_NAME, MyOpener.COL_ID + "= ?", new String[] {Long.toString(c.getId())});
+    protected void deleteContact(Contact c) {
+        db.delete(MyOpener.TABLE_NAME, MyOpener.COL_ID + "= ?", new String[]{Long.toString(c.getId())});
     }
 
 
-    protected class MyOwnAdapter extends BaseAdapter
-    {
+    protected class MyOwnAdapter extends BaseAdapter {
         @Override
         public int getCount() {
             return contactsList.size();
         }
 
-        public Contact getItem(int position){
+        public Contact getItem(int position) {
             return contactsList.get(position);
         }
 
-        public View getView(int position, View old, ViewGroup parent)
-        {
-            View newView = getLayoutInflater().inflate(R.layout.contact_row, parent, false );
+        public View getView(int position, View old, ViewGroup parent) {
+            View newView = getLayoutInflater().inflate(R.layout.contact_row, parent, false);
 
             Contact thisRow = getItem(position);
 
             //get the TextViews
-            TextView rowName = (TextView)newView.findViewById(R.id.row_name);
-            TextView rowId = (TextView)newView.findViewById(R.id.row_id);
+            TextView rowName = (TextView) newView.findViewById(R.id.row_name);
+            TextView rowId = (TextView) newView.findViewById(R.id.row_id);
 
             //update the text fields:
-            rowName.setText(  thisRow.getName());
+            rowName.setText(thisRow.getName());
 
             rowId.setText("id:" + thisRow.getId());
 
@@ -249,8 +238,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         //last week we returned (long) position. Now we return the object's database id that we get from line 71
-        public long getItemId(int position)
-        {
+        public long getItemId(int position) {
             return getItem(position).getId();
         }
     }

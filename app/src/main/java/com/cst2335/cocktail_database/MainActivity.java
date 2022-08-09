@@ -8,6 +8,9 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -243,6 +246,32 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public boolean onCreateOptionsMenu(Menu menu){
+
+        // Inflate the menu items for use in the action bar
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.help_item:
+                AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
+                alertDialog.setTitle("How to Use")
+                           .setMessage("Please enter a drink you like and click on search to find out more! ");
+                alertDialog.show();
+
+        }
+
+        return true;
+        }
+
+
+
+
+    }
+
     /*
     private class MyListAdapter extends BaseAdapter {
 
@@ -277,4 +306,3 @@ public class MainActivity extends AppCompatActivity {
     }
 
      */
-}

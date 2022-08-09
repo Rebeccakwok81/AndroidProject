@@ -1,14 +1,21 @@
 package com.cst2335.cocktail_database;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.widget.Button;
 
 import java.util.ArrayList;
 
 public class FavoriteDrinks extends AppCompatActivity {
+    RVAdapter adapter;
+    RecyclerView recyclerView;
 
     //FG
     public static final String ITEM_SELECTED = "ITEM";
@@ -22,7 +29,16 @@ public class FavoriteDrinks extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favorite_drinks);
+
+        Button clickBtnFravor = findViewById(R.id.btnBack);
         loadDataFromDatabase();
+
+     //   Intent favoritePage = new Intent (this, MainActivity.class);
+        clickBtnFravor.setOnClickListener(click -> {
+
+            startActivity(new Intent (this, MainActivity.class));
+        });
+
     }
 
 
@@ -52,6 +68,13 @@ public class FavoriteDrinks extends AppCompatActivity {
 
             //add the new Contact to the array list:
             arrayDrinkInfo.add(new DrinkInfo(name));
+            adapter = new RVAdapter(this, arrayDrinkInfo);
+            recyclerView.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
+            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+            recyclerView.setLayoutManager(layoutManager);
+            recyclerView.setItemAnimator(new DefaultItemAnimator());
+
         }
     }
 

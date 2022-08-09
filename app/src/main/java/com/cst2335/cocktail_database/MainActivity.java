@@ -50,10 +50,10 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView recyclerView;
 
     //hold search input
-    EditText search = null;
+    EditText search;
 
     //hold search input with plus sign
-    String editSearch = null;
+    String editSearch;
 
     SQLiteDatabase db;
 
@@ -102,8 +102,9 @@ public class MainActivity extends AppCompatActivity {
            // arrayDrinkInfo.clear();
            // drinkName.clear();
 
+            editSearch = search.getText().toString();
             //check search is not empty
-         if (search != null) {
+         if (editSearch != "") {
 
              editSearch = search.getText().toString();
              //Replace space in search with add sign require by API fromate
@@ -115,6 +116,12 @@ public class MainActivity extends AppCompatActivity {
              //load data from search currently name only
              setData();
          }
+         else
+         {
+             arrayDrinkInfo.clear();
+             drinkName.clear();
+             useAdapter();
+         }
         });
     }
 
@@ -125,6 +132,16 @@ public class MainActivity extends AppCompatActivity {
             System.out.println(arrayDrinkInfo.get(i).getDrinkName());
             useAdapter();
         }
+    }
+
+    public void useAdapter () {
+        adapter = new RVAdapter(this, arrayDrinkInfo);
+        recyclerView.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        search.setText("");
     }
 
 /*
@@ -192,15 +209,7 @@ public class MainActivity extends AppCompatActivity {
 
 */
 
-        public void useAdapter () {
-            adapter = new RVAdapter(this, arrayDrinkInfo);
-            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-            recyclerView.setLayoutManager(layoutManager);
-            recyclerView.setItemAnimator(new DefaultItemAnimator());
-            recyclerView.setAdapter(adapter);
-            adapter.notifyDataSetChanged();
-            search.setText("");
-        }
+
 
         private class MyHTTPRequest extends AsyncTask<String, Integer, String> {
             String pic;

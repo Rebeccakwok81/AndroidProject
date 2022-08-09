@@ -5,10 +5,12 @@
       <map>
         <entry key="..\:/Users/jimmy/AndroidStudioProjects/Cocktail_Database/app/src/main/res/layout/activity_contact.xml" value="0.25" />
         <entry key="..\:/Users/jimmy/AndroidStudioProjects/Cocktail_Database/app/src/main/res/layout/activity_empty.xml" value="0.25" />
+        <entry key="..\:/Users/jimmy/AndroidStudioProjects/Cocktail_Database/app/src/main/res/layout/activity_fravorite_drinks.xml" value="0.25" />
         <entry key="..\:/Users/jimmy/AndroidStudioProjects/Cocktail_Database/app/src/main/res/layout/activity_main.xml" value="0.22" />
         <entry key="..\:/Users/jimmy/AndroidStudioProjects/Cocktail_Database/app/src/main/res/layout/contact_edit.xml" value="0.25" />
         <entry key="..\:/Users/jimmy/AndroidStudioProjects/Cocktail_Database/app/src/main/res/layout/contact_row.xml" value="0.25" />
         <entry key="..\:/Users/jimmy/AndroidStudioProjects/Cocktail_Database/app/src/main/res/layout/fragment_drink_info.xml" value="0.25" />
+        <entry key="..\:/Users/jimmy/AndroidStudioProjects/Cocktail_Database/app/src/main/res/layout/list_items.xml" value="0.25" />
       </map>
     </option>
   </component>

@@ -246,6 +246,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //set up the toolbar menu
     public boolean onCreateOptionsMenu(Menu menu){
 
         // Inflate the menu items for use in the action bar
@@ -254,6 +255,7 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    //set up the toolbar menu, create a alert dialog for item click
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.help_item:

@@ -10,10 +10,12 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -25,6 +27,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DrinkOnClickActivity extends AppCompatActivity {
 
@@ -35,7 +39,8 @@ public class DrinkOnClickActivity extends AppCompatActivity {
     ImageView photo;
     ProgressBar progressBar;
     String imgURL;
-    Bitmap bmp;
+    Button addFavBtn;
+    Contact drink;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +52,7 @@ public class DrinkOnClickActivity extends AppCompatActivity {
         in2 = findViewById(R.id.ing2);
         in3 = findViewById(R.id.ing3);
         photo = findViewById(R.id.imageView);
+        addFavBtn = findViewById(R.id.addFav);
 
         progressBar = findViewById(R.id.progressBar);
         progressBar.setVisibility(View.VISIBLE);
@@ -54,6 +60,15 @@ public class DrinkOnClickActivity extends AppCompatActivity {
         String keywd = getIntent().getStringExtra("keywd");
         MyHTTPRequest req = new MyHTTPRequest();
         req.execute("https://www.thecocktaildb.com/api/json/v1/1/search.php?s=" + keywd);  //Type 1
+
+
+        addFavBtn.setOnClickListener((vw)->{
+            Intent i = new Intent(this, FavoriteDrinks.class);
+            i.putExtra("price", in1.getText().toString());
+            i.putExtra("name", in2.getText().toString());
+            startActivity(i);
+
+        });
 
     }
 
@@ -140,6 +155,14 @@ public class DrinkOnClickActivity extends AppCompatActivity {
         }
 
     }
+
+   /* public void addToFavorites() {
+
+
+        Toast.makeText(this, "Inserted item id:" + drink.name, Toast.LENGTH_LONG).show();
+    }
+*/
+
 
 }
 

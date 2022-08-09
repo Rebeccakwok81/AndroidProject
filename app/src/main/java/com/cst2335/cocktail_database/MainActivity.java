@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -66,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
         EditText nameEdit = findViewById(R.id.etSearch);
         Button clickBtnSearch = findViewById(R.id.btnSearch);
         ListView list = (ListView) findViewById(R.id.listDrink);
+        Button clickBtnFravor = findViewById(R.id.btnFavorites);
 
 
         myAdapter = new MyOwnAdapter();
@@ -100,6 +102,10 @@ public class MainActivity extends AppCompatActivity {
             return false;
         });
 
+        SharedPreferences sp = getSharedPreferences("prefernce", MODE_PRIVATE);
+        String searchPref= sp.getString("nameEdit", null);
+        nameEdit.setText(searchPref);
+
 //        arrayAdapter = new ArrayAdapter<String>(getApplicationContext(),
 //                android.R.layout.simple_list_item_1, pic);
 
@@ -107,6 +113,12 @@ public class MainActivity extends AppCompatActivity {
         clickBtnSearch.setOnClickListener(click -> {
             //
             String name = nameEdit.getText().toString();
+
+            SharedPreferences.Editor editor = sp.edit();
+            //name = search.getText().toString();
+            editor.putString("nameEdit",name);bee
+            editor.commit();
+
 
             //add to the database and get the new ID
             ContentValues newRowValues = new ContentValues();
@@ -124,8 +136,6 @@ public class MainActivity extends AppCompatActivity {
             myAdapter.notifyDataSetChanged();
 
             nameEdit.setText("");
-//            arrayAdapter.notifyDataSetChanged();
-
 
             Toast.makeText(this, "Inserted item id:" + newId, Toast.LENGTH_LONG).show();
 //            if(editSearch != null)
@@ -137,6 +147,11 @@ public class MainActivity extends AppCompatActivity {
 //            arrayAdapter.notifyDataSetChanged();
         });
 
+        //Intent favoritePage = new Intent (this, FavoriteDrinks.class);
+        clickBtnFravor.setOnClickListener(click -> {
+
+            startActivity(new Intent (this, FavoriteDrinks.class));
+        });
 
     }
 

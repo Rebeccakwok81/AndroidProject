@@ -49,6 +49,12 @@
         android:layout_height="wrap_content"
         android:textSize="20dp"/>
 
+        <Button
+            android:id="@+id/addFav"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Add To Favourite" />
+
     </LinearLayout>
 
 </FrameLayout>

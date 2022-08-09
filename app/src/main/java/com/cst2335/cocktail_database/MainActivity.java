@@ -50,15 +50,19 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView recyclerView;
 
     //hold search input
-    EditText search;
+    EditText search = null;
 
     //hold search input with plus sign
-    String editSearch;
+    String editSearch = null;
 
     SQLiteDatabase db;
 
     //list of drink from HTTP
     ArrayList <DrinkInfo>  arrayDrinkInfo = new ArrayList<>();
+    //ArrayList <DrinkInfo>  arrayDrinkInfo;
+
+    ArrayList <String> drinkName = new ArrayList<>();
+    //ArrayList <String> drinkName;
 
     //Globel variable for AsyncTask
     TextView ins;
@@ -67,7 +71,6 @@ public class MainActivity extends AppCompatActivity {
     TextView in3;
     ImageView photo;
     ProgressBar progressBar;
-    ArrayList <String> drinkName = new ArrayList<>();
 
     RVAdapter adapter;
 
@@ -77,11 +80,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-
         //rvDrink is in activity_main.xml
         recyclerView = findViewById(R.id.rvDrink);
 
+        //etSearch(EditText for search) is in activity_main
+        search = findViewById(R.id.etSearch);
 
         //btnSearch(search button) is in activity_main
         Button clickBtnSearch = findViewById(R.id.btnSearch);
@@ -92,27 +95,27 @@ public class MainActivity extends AppCompatActivity {
         // progressBar = findViewById(R.id.progressBar);
         //progressBar.setVisibility(View.VISIBLE);
 
-        RVAdapter adapter;
-
         //When search is click text in the EditText is pass to the list with plus sign in space
         clickBtnSearch.setOnClickListener(click -> {
 
-
-
-            //etSearch(EditText for search) is in activity_main
-            search = findViewById(R.id.etSearch);
-            editSearch = search.getText().toString();
+            //reset array can not imp because botton require click twice
+           // arrayDrinkInfo.clear();
+           // drinkName.clear();
 
             //check search is not empty
-            if (editSearch != null) {
+         if (search != null) {
+
+                editSearch = search.getText().toString();
                 //Replace space in search with add sign require by API fromate
                 editSearch = editSearch.replaceAll("\\s", "+");
 
+                //Send search to MyHTTPRequest
                 MyHTTPRequest req = new MyHTTPRequest();
                 req.execute("https://www.thecocktaildb.com/api/json/v1/1/search.php?s=" + editSearch);  //Type 1
-                setData();
 
-            }
+                //load data from search currently name only
+                setData();
+         }
 
 
         });
@@ -198,7 +201,6 @@ public class MainActivity extends AppCompatActivity {
             recyclerView.setAdapter(adapter);
             adapter.notifyDataSetChanged();
             search.setText("");
-
         }
 
         private class MyHTTPRequest extends AsyncTask<String, Integer, String> {
@@ -261,7 +263,6 @@ public class MainActivity extends AppCompatActivity {
                 } catch (Exception e) {
 
                 }
-
                 return "Done";
             }
 

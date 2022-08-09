@@ -6,7 +6,9 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -92,13 +94,21 @@ public class MainActivity extends AppCompatActivity {
         // progressBar = findViewById(R.id.progressBar);
         //progressBar.setVisibility(View.VISIBLE);
 
+        SharedPreferences sp = getSharedPreferences("prefernce", MODE_PRIVATE);
+        String searchPref= sp.getString("search", null);
+        search.setText(searchPref);
+
         //When search is click text in the EditText is pass to the list with plus sign in space
         clickBtnSearch.setOnClickListener(click -> {
 
             //reset array can not imp because botton require click twice
 
 
+            SharedPreferences.Editor editor = sp.edit();
             editSearch = search.getText().toString();
+            editor.putString("search",editSearch);
+            editor.commit();
+
             //check search is not empty
          if (editSearch != "") {
 

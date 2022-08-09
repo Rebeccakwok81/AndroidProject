@@ -105,21 +105,20 @@ public class MainActivity extends AppCompatActivity {
             //check search is not empty
          if (search != null) {
 
-                editSearch = search.getText().toString();
-                //Replace space in search with add sign require by API fromate
-                editSearch = editSearch.replaceAll("\\s", "+");
+             editSearch = search.getText().toString();
+             //Replace space in search with add sign require by API fromate
+             editSearch = editSearch.replaceAll("\\s", "+");
+             //Send search to MyHTTPRequest
+             MyHTTPRequest req = new MyHTTPRequest();
+             req.execute("https://www.thecocktaildb.com/api/json/v1/1/search.php?s=" + editSearch);  //Type 1
 
-                //Send search to MyHTTPRequest
-                MyHTTPRequest req = new MyHTTPRequest();
-                req.execute("https://www.thecocktaildb.com/api/json/v1/1/search.php?s=" + editSearch);  //Type 1
-
-                //load data from search currently name only
-                setData();
+             //load data from search currently name only
+             setData();
          }
-
-
         });
     }
+
+
     public void setData () {
         for (int i = 0; i < drinkName.size(); i++) {
             arrayDrinkInfo.add(new DrinkInfo(drinkName.get(i)));
@@ -245,7 +244,6 @@ public class MainActivity extends AppCompatActivity {
 
                         publishProgress(50);
                         drinkName.add(obj.getString("strDrink"));
-                        name = obj.getString("strDrink");
                         inst = obj.getString("strInstructions");
                         ing1 = obj.getString("strIngredient1");
                         ing2 = obj.getString("strIngredient2");
@@ -258,8 +256,6 @@ public class MainActivity extends AppCompatActivity {
                         int j = 0;
                         j++;
                     }
-
-
                 } catch (Exception e) {
 
                 }

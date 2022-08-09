@@ -3,6 +3,7 @@
     <string name="strBtnSearch">Search</string>
     <string name="strEtSearch">Please enter search here...</string>
     <string name="strBtnFavorites">Favorite Drinks</string>
+    <string name="strBtnHelp">Help</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

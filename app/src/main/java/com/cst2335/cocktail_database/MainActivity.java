@@ -42,7 +42,7 @@ The user must be able to view a list of their saved data and remove them from th
 The SharedPreferences should save the user’s search words so that the next time you start the application,
 the previous search term is shown.
 */
-
+//Scrollable List
 public class MainActivity extends AppCompatActivity {
 
 
